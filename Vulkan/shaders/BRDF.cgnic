@@ -1,0 +1,159 @@
+vec3 Fresnel_Schlick(vec3 F0, vec3 N, vec3 L)
+{
+    return F0 + (1.0 - F0) * pow((1 - clamp(dot(N, L), 0.0, 1.0)), 5.0);
+}
+
+vec3 Fresnel_MoreNormal(vec3 F0, vec3 F90, vec3 N, vec3 L, float sharpness)
+{
+    return F0 + (F90 - F0) * pow((1.0 - clamp(dot(N, L), 0.0, 1.0)), 1.0 / sharpness);
+}
+
+//roughness mapping
+float Disney_RoughnessMapping(float roughness)
+{
+    return roughness * roughness;
+}
+
+float BlinnPhong_RoughnessMapping(float m, float s)
+{
+    return pow(m, s);
+}
+
+//BlinnPhong NDF
+float BlinnPhong_NDF(vec3 N, vec3 M, float m, float s)
+{
+    float r = BlinnPhong_RoughnessMapping(m, s);
+    float chi = step(0.0, dot(N, M));
+    float N_M = dot(N, M);
+    float N_M_R = pow(N_M, r);
+
+    return chi * (r + 2.0) / (2.0 * PI) * N_M_R;
+}
+
+//Beckmann NDF
+float Beckmann_NDF(vec3 N, vec3 M, float roughness)
+{
+    float r_2 = roughness * roughness;
+    float chi = step(0.0, dot(N, M));
+    float N_M = dot(N, M);
+    float N_M_2 = N_M * N_M;
+    float N_M_4 = N_M_2 * N_M_2;
+
+    float A = chi / (PI * r_2 * N_M_4);
+    float E = (N_M_2 - 1.0) / (r_2 * N_M_2);
+
+    return A * exp(E);
+}
+
+float GetAForLambda(vec3 N, vec3 S, float roughness) //S = L or V
+{
+    float N_S = dot(N, S);
+    float N_S_2 = N_S * N_S;
+    return N_S / (roughness * sqrt(1 - N_S_2));
+}
+
+float Beckmann_Lambda_Approx(vec3 N, vec3 S, float roughness)
+{
+    float a = GetAForLambda(N, S, roughness);
+    float a2 = a * a;
+    float Lambda = (1.0 - 1.259 * a + 0.396 * a2) / (3.535 * a + 2.181 * a2);
+    return mix(Lambda, 0.0, step(1.6, roughness));
+}
+
+//GGX NDF
+float GGX_NDF(vec3 N, vec3 M, float roughness)
+{
+    float r = Disney_RoughnessMapping(roughness);
+    float r2 = r * r;
+    float chi = step(0.0, dot(N, M));
+    float N_M = dot(N, M);
+    float N_M_2 = N_M * N_M;
+    float temp = 1.0 + N_M_2 * (r2 - 1.0);
+
+    return (chi * r2) / (PI * temp * temp);
+}
+
+float GGX_Lambda(vec3 N, vec3 S, float roughness)
+{
+    float a = GetAForLambda(N, S, roughness);
+    float a2 = a * a;
+    return (-1.0 + sqrt(1.0 + 1.0 / a2)) / 2.0;
+}
+
+//GTR NDF
+float GTR_Para_k(float roughness, float gamma)
+{
+    float r2 = roughness * roughness;
+    float k1 = (gamma - 1) * (r2 - 1) / (1 - pow(r2, 1 - gamma));
+    float k2 = (r2 - 1) / log(r2);
+    float k3 = 1;
+    float temp = mix(k2, k1, step(0.0, abs(gamma - 1)));
+    temp = mix(k3, temp, step(0.0, abs(roughness - 1)));
+    return temp;
+}
+
+float GTR_NDF(vec3 N, vec3 M, float roughness, float gamma)
+{
+    float r = Disney_RoughnessMapping(roughness);
+    float r2 = r * r;
+    float N_M = dot(N, M);
+    float N_M_2 = N_M * N_M;
+    float b = GTR_Para_k(r, gamma);
+
+    return b / (PI * pow(1 + N_M_2 * (r2 - 1), gamma));
+}
+
+//float GTR_NormalTerm(float)
+
+//Smith G1
+ float Smith_G1(vec3 M, vec3 S, float Lambda)
+ {
+     float chi = step(0.0, dot(S, M));
+     return 1.0 / (1.0 + Lambda);
+ }
+
+//Smith G2
+float Smith_G2_Separable(vec3 M, vec3 L, vec3 V, float Lambda)
+{
+    float G1_L = Smith_G1(M, L, Lambda);
+    float G1_V = Smith_G1(M, V, Lambda);
+    return G1_L * G1_V;
+}
+
+float Smith_G2_Help_Para_Gaussian(vec3 l, vec3 v)
+{
+    float phi = acos(dot(l, v));
+    float phi_2 = phi * phi;
+    return 1.0 - exp(-7.3 * phi_2);
+}
+
+float Smith_G2_Help_Para_Fan(vec3 l, vec3 v)
+{
+    float phi = acos(dot(l, v));
+    return 4.41 * phi / (4.41 * phi + 1.0);
+}
+
+float Smith_G2_Angle(vec3 M, vec3 L, vec3 V, float Lambda, int s)
+{
+    float G1_L = Smith_G1(M, L, Lambda);
+    float G1_V = Smith_G1(M, V, Lambda);
+    float a = mix(Smith_G2_Help_Para_Gaussian(L, V),  Smith_G2_Help_Para_Fan(L, V), step(0.0, s));
+    return a * G1_L * G1_V + (1 - a) * min(G1_V, G1_L);
+}
+
+float Smith_G2_Height(vec3 M, vec3 L, vec3 V, float Lambda_V, float Lambda_L)
+{
+    float chi1 = step(0.0, dot(V, M));
+    float chi2 = step(0.0, dot(L, M));
+    return chi1 * chi2 / (1 + Lambda_L + Lambda_V);
+}
+
+float Smith_G2_AngleAndHeight(vec3 M, vec3 L, vec3 V, float Lambda_V, float Lambda_L, int s)
+{
+    float chi1 = step(0.0, dot(V, M));
+    float chi2 = step(0.0, dot(L, M));
+    float a = mix(Smith_G2_Help_Para_Gaussian(L, V),  Smith_G2_Help_Para_Fan(L, V), step(0.0, s));
+    return chi1 * chi2 / (1 + max(Lambda_L, Lambda_V) + a * min(Lambda_V, Lambda_L));
+}
+
+

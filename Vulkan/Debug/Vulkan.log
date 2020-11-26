@@ -1,0 +1,13 @@
+﻿  test.cpp
+test.obj : error LNK2019: 无法解析的外部符号 _vkCreateInstance@12，函数 "private: void __thiscall HelloTriangleApplication::createInstance(void)" (?createInstance@HelloTriangleApplication@@AAEXXZ) 中引用了该符号
+test.obj : error LNK2019: 无法解析的外部符号 _glfwInit，函数 "private: void __thiscall HelloTriangleApplication::initWindow(void)" (?initWindow@HelloTriangleApplication@@AAEXXZ) 中引用了该符号
+test.obj : error LNK2019: 无法解析的外部符号 _glfwTerminate，函数 "private: void __thiscall HelloTriangleApplication::cleanup(void)" (?cleanup@HelloTriangleApplication@@AAEXXZ) 中引用了该符号
+test.obj : error LNK2019: 无法解析的外部符号 _glfwWindowHint，函数 "private: void __thiscall HelloTriangleApplication::initWindow(void)" (?initWindow@HelloTriangleApplication@@AAEXXZ) 中引用了该符号
+test.obj : error LNK2019: 无法解析的外部符号 _glfwCreateWindow，函数 "private: void __thiscall HelloTriangleApplication::initWindow(void)" (?initWindow@HelloTriangleApplication@@AAEXXZ) 中引用了该符号
+test.obj : error LNK2019: 无法解析的外部符号 _glfwDestroyWindow，函数 "private: void __thiscall HelloTriangleApplication::cleanup(void)" (?cleanup@HelloTriangleApplication@@AAEXXZ) 中引用了该符号
+test.obj : error LNK2019: 无法解析的外部符号 _glfwWindowShouldClose，函数 "private: void __thiscall HelloTriangleApplication::mainLoop(void)" (?mainLoop@HelloTriangleApplication@@AAEXXZ) 中引用了该符号
+test.obj : error LNK2019: 无法解析的外部符号 _glfwPollEvents，函数 "private: void __thiscall HelloTriangleApplication::mainLoop(void)" (?mainLoop@HelloTriangleApplication@@AAEXXZ) 中引用了该符号
+test.obj : error LNK2019: 无法解析的外部符号 _glfwGetRequiredInstanceExtensions，函数 "private: void __thiscall HelloTriangleApplication::createInstance(void)" (?createInstance@HelloTriangleApplication@@AAEXXZ) 中引用了该符号
+C:\VulkanSDK\1.2.148.1\Lib\vulkan-1.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+C:\Users\Cooler\Desktop\JMX\environment\c++_Vulkan\glfw-3.3.2.bin.WIN64\lib-vc2015\glfw3.lib : warning LNK4272: 库计算机类型“x64”与目标计算机类型“x86”冲突
+C:\Users\Cooler\source\repos\Vulkan\Debug\Vulkan.exe : fatal error LNK1120: 9 个无法解析的外部命令
