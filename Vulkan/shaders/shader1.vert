@@ -16,11 +16,19 @@ layout(location = 4) in vec3 inBinormal;
 layout(location = 0) out vec3 worldPos;
 layout(location = 1) out vec3 fragNormal;
 layout(location = 2) out vec2 fragTexCoord;
+layout(location = 3) out vec3 fragTangent;
+layout(location = 4) out vec3 fragBinormal;
 
 void main() {
-    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
-    worldPos = vec3(ubo.model * vec4(inPosition, 1.0));
-    fragNormal = mat3(transpose(inverse(ubo.model))) * inNormal;  
+   // gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
+    float a = 1000.0f;
+    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition/a, 1.0);
+    worldPos = vec3(ubo.model * vec4(inPosition/a, 1.0));
+
+    fragNormal = normalize(mat3(transpose(inverse(ubo.model))) * inNormal);  
+    fragTangent = normalize(mat3(transpose(inverse(ubo.model))) * inTangent);
+    fragBinormal = normalize(mat3(transpose(inverse(ubo.model))) * inBinormal);
+
     fragTexCoord = inTexCoord;
 }
 

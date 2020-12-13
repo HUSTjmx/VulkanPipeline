@@ -92,7 +92,6 @@ public:
     std::vector<std::vector<MyVertex>> Models_Vertex;
     //模型的索引数组
     std::vector<std::vector<VectorIndexType>> Models_indices;
-
     //顶点数组缓冲区数组
     std::vector<VertexBuffer*> Models_Vertex_Buffers;
 
@@ -100,7 +99,7 @@ public:
         initWindow();
         initVulkan();
 
-        camera = new Camera(glm::vec3(0.0f, 10.0f, 10.0f));
+        camera = new Camera(glm::vec3(0.0f, 0.0f, 2.0f));
         for (int i = 0;i < swapChain->swapChainImages.size();i++)
         {
             LightUniBuffer->updateLightBuffer(i, swapChain, camera->Position);
@@ -236,7 +235,6 @@ private:
 
     }
 
-
     void mainLoop() {
         //要使应用程序一直运行，直到出现错误或关闭窗口，我们需要向mainLoop函数添加一个事件循环，如下所示
         while (!glfwWindowShouldClose(window)) {
@@ -255,7 +253,6 @@ private:
         }
         vkDeviceWaitIdle(logicDevice->self);
     }
-
 
     //清理与SwapChain相关的资源
     //Problem:command内存池不需要销毁，但是由于写法而销毁了

@@ -10,10 +10,13 @@ layout(binding = 1) uniform Light {
 } light_0;
 
 layout(binding = 2) uniform sampler2D texSampler;
+layout(binding = 3) uniform sampler2D normalSampler;
 
 layout(location = 0) in vec3 worldPos;
 layout(location = 1) in vec3 fragNormal;
 layout(location = 2) in vec2 fragTexCoord;
+layout(location = 3) in vec3 fragTangent;
+layout(location = 4) in vec3 fragBinormal;
 
 layout(location = 0) out vec4 outColor;
 
@@ -67,33 +70,35 @@ vec3 BRDF_Cook_Torrance(vec3 N, vec3 V, vec3 L, vec3 R, vec3 H, vec3 albedo, vec
     kD *= 1.0 - metallic;
 
     float N_L = max(dot(N, L), 0.0);
-    return (kD * albedo / PI + spec) * N_L;
+    return (kD * albedo / PI + kS * spec) * N_L;
 }
 
 void main() {
 
     vec3 ambient = vec3(0.05, 0.05, 0.05);
     vec3 albedo =  pow(texture(texSampler, fragTexCoord).rgb, vec3(2.2));
-    vec3 F0 = vec3(0.04, 0.04, 0.04);
-    float metallic  = texture(texSampler, fragTexCoord).r;
-    float roughness = texture(texSampler, fragTexCoord).r;
+    //vec3 albedo =  vec3(0.5,0.5,0.7);
+    vec3 F0 = vec3(0.5, 0.6, 0.8);
+    float metallic  = 0.7;
+    float roughness = 0.3;
 
     F0 = mix(F0, albedo, metallic);
 
-    vec3 N = normalize(fragNormal);
-    vec3 V = normalize(light_0.camPos - worldPos);
-    vec3 L = normalize(light_0.position - worldPos);
+    mat3 TBN = transpose(mat3(fragTangent,fragBinormal,fragNormal));
+
+    vec3 N = texture(normalSampler,fragTexCoord).rgb;
+    N = normalize(N * 2.0 - 1.0);
+    vec3 V = TBN*normalize(light_0.camPos - worldPos);
+    vec3 L = TBN*normalize(light_0.position - worldPos);
     vec3 R = normalize(reflect(-L, N));
     vec3 H = normalize(L + V);
 
     vec3 brdf = BRDF_Cook_Torrance(N, V, L, R, H, albedo, F0, roughness, metallic);
-    brdf = BRDF_Phong(N, V, L, R, H, albedo, F0);
-    vec3 color = ambient * albedo * 0.1 + brdf * light_0.color;
+    //brdf = BRDF_Phong(N, V, L, R, H, albedo, F0);
+    vec3 color = brdf * light_0.color;
 
     color = color / (color + vec3(1.0));
-
     color = pow(color, vec3(1/2.2));
-
     outColor = vec4(color, 1);
  //   outColor = vec4(dot(R, V),dot(R, V),dot(R, V), 1);
 }

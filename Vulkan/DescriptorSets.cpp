@@ -68,7 +68,7 @@ void DescriptorSets::UpdateDescriptorSets(SwapChain* swapChain, UniformBuffer* u
 		{
 			descriptorWrites[UNIFORM_NUM + j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			descriptorWrites[UNIFORM_NUM + j].dstSet = self[i];
-			descriptorWrites[UNIFORM_NUM + j].dstBinding = 2;
+			descriptorWrites[UNIFORM_NUM + j].dstBinding = 2 + j;
 			descriptorWrites[UNIFORM_NUM + j].dstArrayElement = 0;
 			descriptorWrites[UNIFORM_NUM + j].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			descriptorWrites[UNIFORM_NUM + j].descriptorCount = 1;

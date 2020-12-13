@@ -15,8 +15,8 @@
 
 
 //视窗大小
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+const uint32_t WIDTH = 1200;
+const uint32_t HEIGHT = 800;
 
 //顶点着色器、片元着色器的相对地址
 const std::string VertAddr = "shaders/vert.spv";
@@ -125,19 +125,20 @@ struct PointLightOfUniformBufferObject {
 };
 
 
-#define IMAGE_NUM  1
+#define IMAGE_NUM  2
 #define UNIFORM_NUM 2
 #define MODEL_NUM 1
 const std::array<std::string, IMAGE_NUM + 10> ImageAddressArray =
 {
-    "models/Man1/body_dif.png",
-    "textures/Circuitry/Circuitry Normals.png",
+    "textures/KHTK/T1_C.jpg",
+    "textures/KHTK/T1_N.jpg",
     "textures/Circuitry/Circuitry Emission.png"
 };
 
 /********模型相关********/
 const std::array<std::string, MODEL_NUM> ModelAddress = {
-    "models/Man1/nanosuit.obj"
+     "models/KHTK/KHTK_mesh.obj",
+
 };
 
 //索引类型
@@ -147,11 +148,40 @@ const std::array<std::string, MODEL_NUM> ModelAddress = {
 
 const std::array<std::string, MODEL_NUM + 100> temp = {
     "models/Man1/body_dif.png",
-    "models/Man1/nanosuit.obj"
+    "models/Man1/nanosuit.obj",
+
+    "models/room/room.obj",
+
+    "models/stand/Arma.obj",
+    "models/stand/block.obj",
+    "models/stand/Buddha.obj",
+    "models/stand/bunny.obj",
+    "models/stand/cube.obj",
+    "models/stand/dinosaur.obj",
+    "models/stand/dragon.obj",
+    "models/stand/fandisk.obj",
+    "models/stand/horse.obj",
+    "models/stand/kitten.obj",
+    "models/stand/rocker.obj",
+    "models/stand/sphere.obj",
+    
+    "models/KHTK/KHTK_mesh.obj",
+
 
     "textures/Circuitry/Circuitry Albedo.png",
     "textures/Circuitry/Circuitry Normals.png",
-    "textures/Circuitry/Circuitry Emission.png"
+    "textures/Circuitry/Circuitry Emission.png",
+
+    "textures/Lava/Lava Albedo Smoothness.png",
+    "textures/Lava/Lava Emission.png",
+    "textures/Lava/Lava Normals.png",
+
+    "textures/KHTK/T1_C.jpg",
+    "textures/KHTK/T1_AO.jpg",
+    "textures/KHTK/T1_E.png",
+    "textures/KHTK/T1_M.png",
+    "textures/KHTK/T1_N.jpg",
+    "textures/KHTK/T1_R.jpg"
 
 };
 

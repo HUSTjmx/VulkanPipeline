@@ -118,6 +118,7 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex
             vec.x = mesh->mTextureCoords[0][i].x;
             vec.y = mesh->mTextureCoords[0][i].y;
             vertex.texCoord = vec;
+           
             // tangent
             vector.x = mesh->mTangents[i].x;
             vector.y = mesh->mTangents[i].y;

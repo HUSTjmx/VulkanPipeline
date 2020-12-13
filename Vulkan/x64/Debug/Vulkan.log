@@ -1,11 +1,3 @@
-﻿  HelloTriangleApplication.cpp
+﻿  DescriptorSets.cpp
 C:\Users\Cooler\source\repos\Vulkan\Vulkan\UniformBuffer.h(6,9): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
-C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(30,17): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(31,17): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(35,19): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(36,19): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(38,13): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(39,13): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(48,32): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
-C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(245,32): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
   Vulkan.vcxproj -> C:\Users\Cooler\source\repos\Vulkan\x64\Debug\Vulkan.exe

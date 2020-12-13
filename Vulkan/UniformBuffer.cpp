@@ -40,7 +40,7 @@ void UniformBuffer::updateLightBuffer(uint32_t currentImage, SwapChain* swapChai
 {
 
     PointLightOfUniformBufferObject light{};
-    light.Position = glm::vec3(0.0f, 0.0f, 2.0f);
+    light.Position = glm::vec3(0.0f, 0.0f, 3.0f);
     light.Color = glm::vec3(1.0, 1.0, 1.0f);
     light.CamPos = camPos;
 
