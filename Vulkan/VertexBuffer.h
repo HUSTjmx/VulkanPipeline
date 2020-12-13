@@ -18,12 +18,16 @@ public:
 
 	std::vector<MyVertex> vertices;
 	std::vector<uint16_t> indices;
+	std::vector<uint32_t> indices_32;
 
 	ExcuteVerticeType excuteType;
+	VkIndexType indexType;
 
 	VertexBuffer(SwapChain* swapChain, std::vector<MyVertex> vectices);
 
 	VertexBuffer(SwapChain* swapChain, std::vector<MyVertex> vectices, std::vector<uint16_t> indices);
+
+	VertexBuffer(SwapChain* swapChain, std::vector<MyVertex> vectices, std::vector<uint32_t> indices);
 
 	void createSelf(VkCommandPool commandPool);
 

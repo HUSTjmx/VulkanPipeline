@@ -130,14 +130,28 @@ struct PointLightOfUniformBufferObject {
 #define MODEL_NUM 1
 const std::array<std::string, IMAGE_NUM + 10> ImageAddressArray =
 {
-    "textures/Circuitry/Circuitry Albedo.png",
+    "models/Man1/body_dif.png",
     "textures/Circuitry/Circuitry Normals.png",
     "textures/Circuitry/Circuitry Emission.png"
 };
 
 /********模型相关********/
 const std::array<std::string, MODEL_NUM> ModelAddress = {
-    "models/room1/viking_room.obj"
+    "models/Man1/nanosuit.obj"
 };
 
+//索引类型
+#define ModelIndexType VK_INDEX_TYPE_UINT32
+
+#define VectorIndexType uint32_t
+
+const std::array<std::string, MODEL_NUM + 100> temp = {
+    "models/Man1/body_dif.png",
+    "models/Man1/nanosuit.obj"
+
+    "textures/Circuitry/Circuitry Albedo.png",
+    "textures/Circuitry/Circuitry Normals.png",
+    "textures/Circuitry/Circuitry Emission.png"
+
+};
 

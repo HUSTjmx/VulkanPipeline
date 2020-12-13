@@ -24,7 +24,7 @@ const std::vector<MyVertex> vertices2 = {
     {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 };
 
-const std::vector<uint32_t> indices2 = {
+const std::vector<VectorIndexType> indices2 = {
     0, 1, 2, 2, 3, 0,
     4, 5, 6, 6, 7, 4
 };
@@ -74,7 +74,7 @@ const std::vector<MyVertex> vertices1 = {
 { {    -0.5f,  0.5f, -0.5f},  {0.0f,  1.0f,  0.0f},  {0.0f,  1.0f }}
 };
 
-//const std::vector<uint16_t> indices = {
+//const std::vector<VectorIndexType> indices = {
 //0, 1, 2, 0, 2, 3,    // front
 //0, 3, 4, 0, 4, 5,    // right
 //0, 5, 6, 0, 6, 1,    // up
@@ -85,7 +85,7 @@ const std::vector<MyVertex> vertices1 = {
 
 //模型1的顶点和索引数组
 std::vector<MyVertex> model_vertices_1;
-std::vector<uint32_t> model_indices_1;
+std::vector<VectorIndexType> model_indices_1;
 
 
 #endif

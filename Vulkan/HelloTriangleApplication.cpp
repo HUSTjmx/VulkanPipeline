@@ -91,7 +91,7 @@ public:
     //模型的顶点数组
     std::vector<std::vector<MyVertex>> Models_Vertex;
     //模型的索引数组
-    std::vector<std::vector<uint16_t>> Models_indices;
+    std::vector<std::vector<VectorIndexType>> Models_indices;
 
     //顶点数组缓冲区数组
     std::vector<VertexBuffer*> Models_Vertex_Buffers;
@@ -100,7 +100,7 @@ public:
         initWindow();
         initVulkan();
 
-        camera = new Camera(glm::vec3(0.0f, 0.0f, 2.0f));
+        camera = new Camera(glm::vec3(0.0f, 10.0f, 10.0f));
         for (int i = 0;i < swapChain->swapChainImages.size();i++)
         {
             LightUniBuffer->updateLightBuffer(i, swapChain, camera->Position);
@@ -161,13 +161,15 @@ private:
         verterBuffer->createSelf(commandBuffer->commandPool);
 
         std::vector<MyVertex> sphere_vertexs;
-        std::vector<uint16_t>sphere_indices;
+        std::vector<uint32_t>sphere_indices;
         CreateTool::GetSphereData(sphere_vertexs, sphere_indices);
        // CreateTool::SetTangentAndBiForVertex(sphere_vertexs, sphere_indices);
         vertexBufferForSphere = new VertexBuffer(swapChain, sphere_vertexs, sphere_indices);
         vertexBufferForSphere->createSelf(commandBuffer->commandPool);
         vertexBufferForSphere->createIndexBuffer(commandBuffer->commandPool);
         Models_Vertex_Buffers.push_back(vertexBufferForSphere);
+
+        //printf_s("bbb: %d %d\n", Models_Vertex_Buffers[0]->indices_32.size(), Models_Vertex_Buffers[0]->vertices.size());
 
         uniformBuffer = new UniformBuffer(swapChain, sizeof(CameraOfUniformBufferObject));
         uniformBuffer->createUniformBuffers(swapChain);
@@ -493,9 +495,9 @@ private:
             Model* temp = new Model(ModelAddress[i]);
             std::vector<MyVertex> temp1;
             Models_Vertex.push_back(temp1);
-            std::vector<uint16_t> temp2;
+            std::vector<VectorIndexType> temp2;
             Models_indices.push_back(temp2);
-            temp->LoadModel(Models_Vertex[i], Models_indices[i]);
+            temp->LoadModel2(Models_Vertex[i], Models_indices[i]);
         }
     }
 
@@ -523,6 +525,7 @@ private:
             Models_Vertex_Buffers[i]->DestroyAll();
         }
     }
+
 };
 
 int main() {

@@ -46,4 +46,7 @@ public:
     * return: void
     */
 	static void GetSphereData(std::vector<MyVertex>& vertexs, std::vector<uint16_t>& indices);
+
+	static void GetSphereData(std::vector<MyVertex>& vertexs, std::vector<uint32_t>& indices);
+
 };

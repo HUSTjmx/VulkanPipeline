@@ -10,9 +10,19 @@ VertexBuffer::VertexBuffer(SwapChain* swapChain, std::vector<MyVertex> vectices)
 VertexBuffer::VertexBuffer(SwapChain* swapChain, std::vector<MyVertex> vectices, std::vector<uint16_t> indices)
 {
 	this->excuteType = Index;
+	this->indexType = VK_INDEX_TYPE_UINT16;
 	this->swapChain = swapChain;
 	this->vertices = vectices;
 	this->indices = indices;
+}
+
+VertexBuffer::VertexBuffer(SwapChain* swapChain, std::vector<MyVertex> vectices, std::vector<uint32_t> indices)
+{
+	this->excuteType = Index;
+	this->indexType = VK_INDEX_TYPE_UINT32;
+	this->swapChain = swapChain;
+	this->vertices = vectices;
+	this->indices_32 = indices;
 }
 
 void VertexBuffer::createSelf(VkCommandPool commandPool)
@@ -38,23 +48,46 @@ void VertexBuffer::createSelf(VkCommandPool commandPool)
 
 //创建IndexBuffer
 void VertexBuffer::createIndexBuffer(VkCommandPool commandPool) {
-	VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+	if (indexType == VK_INDEX_TYPE_UINT16)
+	{
+		VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
-	VkBuffer stagingBuffer;
-	VkDeviceMemory stagingBufferMemory;
-	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMemory;
+		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
-	void* data;
-	vkMapMemory(swapChain->logicDevice->self, stagingBufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, indices.data(), (size_t)bufferSize);
-	vkUnmapMemory(swapChain->logicDevice->self, stagingBufferMemory);
+		void* data;
+		vkMapMemory(swapChain->logicDevice->self, stagingBufferMemory, 0, bufferSize, 0, &data);
+		memcpy(data, indices.data(), (size_t)bufferSize);
+		vkUnmapMemory(swapChain->logicDevice->self, stagingBufferMemory);
 
-	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
 
-	copyBuffer(stagingBuffer, indexBuffer, bufferSize,commandPool);
+		copyBuffer(stagingBuffer, indexBuffer, bufferSize, commandPool);
 
-	vkDestroyBuffer(swapChain->logicDevice->self, stagingBuffer, nullptr);
-	vkFreeMemory(swapChain->logicDevice->self, stagingBufferMemory, nullptr);
+		vkDestroyBuffer(swapChain->logicDevice->self, stagingBuffer, nullptr);
+		vkFreeMemory(swapChain->logicDevice->self, stagingBufferMemory, nullptr);
+	}
+	else
+	{
+		VkDeviceSize bufferSize = sizeof(indices_32[0]) * indices_32.size();
+
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMemory;
+		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+		void* data;
+		vkMapMemory(swapChain->logicDevice->self, stagingBufferMemory, 0, bufferSize, 0, &data);
+		memcpy(data, indices_32.data(), (size_t)bufferSize);
+		vkUnmapMemory(swapChain->logicDevice->self, stagingBufferMemory);
+
+		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+
+		copyBuffer(stagingBuffer, indexBuffer, bufferSize, commandPool);
+
+		vkDestroyBuffer(swapChain->logicDevice->self, stagingBuffer, nullptr);
+		vkFreeMemory(swapChain->logicDevice->self, stagingBufferMemory, nullptr);
+	}
 }
 
 //释放顶点缓冲
