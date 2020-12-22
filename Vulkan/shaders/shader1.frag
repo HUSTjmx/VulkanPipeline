@@ -79,7 +79,7 @@ void main() {
     vec3 albedo =  pow(texture(texSampler, fragTexCoord).rgb, vec3(2.2));
     //vec3 albedo =  vec3(0.5,0.5,0.7);
     vec3 F0 = vec3(0.5, 0.6, 0.8);
-    float metallic  = 0.7;
+    float metallic  = 0.2;
     float roughness = 0.3;
 
     F0 = mix(F0, albedo, metallic);
@@ -87,18 +87,18 @@ void main() {
     mat3 TBN = transpose(mat3(fragTangent,fragBinormal,fragNormal));
 
     vec3 N = texture(normalSampler,fragTexCoord).rgb;
-    N = normalize(N * 2.0 - 1.0);
+   // N = normalize(N * 2.0 - 1.0);
     vec3 V = TBN*normalize(light_0.camPos - worldPos);
     vec3 L = TBN*normalize(light_0.position - worldPos);
     vec3 R = normalize(reflect(-L, N));
     vec3 H = normalize(L + V);
 
     vec3 brdf = BRDF_Cook_Torrance(N, V, L, R, H, albedo, F0, roughness, metallic);
-    //brdf = BRDF_Phong(N, V, L, R, H, albedo, F0);
+    brdf = BRDF_Phong(N, V, L, R, H, albedo, F0);
     vec3 color = brdf * light_0.color;
 
     color = color / (color + vec3(1.0));
     color = pow(color, vec3(1/2.2));
     outColor = vec4(color, 1);
- //   outColor = vec4(dot(R, V),dot(R, V),dot(R, V), 1);
+    //outColor = vec4(dot(R, V),dot(R, V),dot(R, V), 1);
 }

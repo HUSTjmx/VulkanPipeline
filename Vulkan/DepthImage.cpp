@@ -1,11 +1,11 @@
 #include"DepthImage.h"
 
-void DepthImage::createDepthResources()
+void DepthImage::createDepthResources(SwapChain* swapChain)
 {
     VkFormat depthFormat = findDepthFormat();
-    MyBuffer* staingBuffer = new MyBuffer(commandBuffer->graphicsPipeline->swapChain);
-    CreateImage(commandBuffer->graphicsPipeline->swapChain->swapChainExtent.width
-        , commandBuffer->graphicsPipeline->swapChain->swapChainExtent.width
+    MyBuffer* staingBuffer = new MyBuffer(swapChain);
+    CreateImage(swapChain->swapChainExtent.width
+        , swapChain->swapChainExtent.width
         , depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, self, self_memory,staingBuffer);
     createTextureImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 }

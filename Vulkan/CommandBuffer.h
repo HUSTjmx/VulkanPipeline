@@ -39,8 +39,10 @@ public:
 
     void excuteCommandBufferByIndex(std::vector<VkFramebuffer> swapChainFramebuffers, VertexBuffer* vertexBuffer, std::vector<VkDescriptorSet>& descriptorSets);
 
+    void excuteCommandBufferForTest(std::vector<VkFramebuffer> swapChainFramebuffers, VertexBuffer* vertexBuffer1, VertexBuffer* vertexBuffer2, std::vector<VkDescriptorSet>& descriptorSets);
+
     //绘制所有对象
-    void excuteCommandBufferForAll(std::vector<VkFramebuffer> swapChainFramebuffers, std::vector<VertexBuffer*> vertexBuffer, std::vector<VkDescriptorSet>& descriptorSets);
+    void excuteCommandBufferForAll(std::vector<VkFramebuffer> swapChainFramebuffers, std::vector<VertexBuffer*> vertexBuffer, std::vector<std::vector<VkDescriptorSet>>& descriptorSets);
 
     //释放资源(信号量和命令池)
     void DestroyOthers();

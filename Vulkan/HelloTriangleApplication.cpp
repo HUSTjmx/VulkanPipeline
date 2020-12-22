@@ -75,12 +75,6 @@ public:
 
     //描述符集的布局
     DescriptorSetLayout* descriptorSetLayout;
-    //全局变量uniform缓冲区——MVP
-    UniformBuffer* uniformBuffer;
-    //uniform缓冲区——PointLight
-    UniformBuffer* LightUniBuffer;
-    //描述符集
-    DescriptorSets* descriptorSets;
     //深度缓存资源
     DepthImage* depthImage;
 
@@ -92,17 +86,16 @@ public:
     std::vector<std::vector<VectorIndexType>> Models_indices;
     //顶点数组缓冲区数组
     std::vector<VertexBuffer*> Models_Vertex_Buffers;
+    //模型描述符集列表
+    std::vector<std::vector<VkDescriptorSet>> ModelsDescriptorSets;
 
     void run() {
         initWindow();
         initVulkan();
 
         camera = new Camera(glm::vec3(0.0f, 0.0f, 2.0f));
-        for (int i = 0;i < swapChain->swapChainImages.size();i++)
-        {
-            LightUniBuffer->updateLightBuffer(i, swapChain, camera->Position);
-        }
-
+        //need change
+        UpdateModelsUniformTemp1();
         mainLoop();
         cleanup();
     }
@@ -144,14 +137,14 @@ private:
 
         depthImage = new DepthImage();
         depthImage->commandBuffer = commandBuffer;
-        depthImage->createDepthResources();
+        depthImage->createDepthResources(swapChain);
 
         frameBuffer = new FrameBuffer(*swapChain, *graphicsPipeline,depthImage->self_view);
 
         LoadModels();
 
         InitVertexBuffers();
-
+        InitModelsUniform();
        // std::vector<MyVertex> sphere_vertexs;
        // std::vector<uint32_t>sphere_indices;
        // CreateTool::GetSphereData(sphere_vertexs, sphere_indices);
@@ -162,19 +155,10 @@ private:
        // Models_Vertex_Buffers.push_back(vertexBufferForSphere);
 
         //printf_s("bbb: %d %d\n", Models_Vertex_Buffers[0]->indices_32.size(), Models_Vertex_Buffers[0]->vertices.size());
-
-        uniformBuffer = new UniformBuffer(swapChain, sizeof(VertexOfUniformBufferObject));
-        uniformBuffer->createUniformBuffers(swapChain);
-
-        LightUniBuffer = new UniformBuffer(swapChain, sizeof(FragmentOfUniformBufferObject));
-        LightUniBuffer->createUniformBuffers(swapChain);
-
-        descriptorSets = new DescriptorSets();
-        descriptorSets->createDescriptorPool(swapChain);
-        descriptorSets->createSelf(swapChain, descriptorSetLayout, uniformBuffer, textureImages ,LightUniBuffer);
-        
+        printf_s("ssss\n");
+        InitModelsDescriptorSets();
         commandBuffer->Create(frameBuffer->swapChainFramebuffers);
-        commandBuffer->excuteCommandBufferForAll(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers, descriptorSets->self);
+        commandBuffer->excuteCommandBufferForAll(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers, ModelsDescriptorSets);
         commandBuffer->createSyncObjects();
     }
 
@@ -263,11 +247,9 @@ private:
 
         commandBuffer->DestroyOthers();
 
-        uniformBuffer->Destroy(swapChain, logicDevice->self);
+        DestroyModelsUniform();
 
-        LightUniBuffer->Destroy(swapChain, logicDevice->self);
-
-        descriptorSets->destroyDescriptorPool(logicDevice);
+        DestroyModelsDescriptorSetsPool();
     }
 
     //清理所有需要释放的资源
@@ -326,29 +308,22 @@ private:
 
         depthImage = new DepthImage();
         depthImage->commandBuffer = commandBuffer;
-        depthImage->createDepthResources();
+        depthImage->createDepthResources(swapChain);
 
         frameBuffer = new FrameBuffer(*swapChain, *graphicsPipeline, depthImage->self_view);
 
-        uniformBuffer = new UniformBuffer(swapChain, sizeof(VertexOfUniformBufferObject));
-        uniformBuffer->createUniformBuffers(swapChain);
-
-        LightUniBuffer = new UniformBuffer(swapChain, sizeof(FragmentOfUniformBufferObject));
-        LightUniBuffer->createUniformBuffers(swapChain);
-
-        descriptorSets = new DescriptorSets();
-        descriptorSets->createDescriptorPool(swapChain);
-        descriptorSets->createSelf(swapChain, descriptorSetLayout, uniformBuffer,textureImages,LightUniBuffer);
+        InitModelsUniform();
+        InitModelsDescriptorSets();
 
         commandBuffer->Create(frameBuffer->swapChainFramebuffers);
-        //commandBuffer->excuteCommandBufferForAll(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers, descriptorSets->self);
-        commandBuffer->excuteCommandBufferByIndex(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers[0], descriptorSets->self);
+        commandBuffer->excuteCommandBufferForAll(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers, ModelsDescriptorSets);
+        //commandBuffer->excuteCommandBufferByIndex(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers[0], ModelsDescriptorSets);
         commandBuffer->createSyncObjects();
 
-        for (int i = 0;i < swapChain->swapChainImages.size();i++)
+      /*  for (int i = 0;i < swapChain->swapChainImages.size();i++)
         {
             LightUniBuffer->updateLightBuffer(i, swapChain,camera->Position);
-        }
+        }*/
     }
 
     //绘制FrameBuffer
@@ -368,9 +343,7 @@ private:
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
-        uniformBuffer->updateUniformBuffer(imageIndex, swapChain, camera);
-        LightUniBuffer->updateCameraPosition(imageIndex, swapChain, camera->Position);
-
+        UpdateModelsUniformInGeneral(imageIndex);
 
         // Check if a previous frame is using this image (i.e. there is its fence to wait on)
         if (commandBuffer->imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
@@ -467,8 +440,51 @@ private:
             Models_indices.push_back(temp2);
             temp->LoadModel2(Models_Vertex[i], Models_indices[i]);
 
-            temp->InitTextures(ImageAddressArray, commandBuffer);
+            temp->InitTextures(ImageAddressArray[i], commandBuffer);
             Models.push_back(temp);
+        }
+    }
+
+    void InitModelsUniform()
+    {
+        for (int i = 0;i < MODEL_NUM;i++)
+        {
+            Models[i]->InitUniformBuffer(swapChain);
+        }
+    }
+
+    void DestroyModelsUniform()
+    {
+        for (int i = 0;i < MODEL_NUM;i++)
+        {
+            Models[i]->DestroyUniformBuffer(swapChain);
+        }
+    }
+
+    void UpdateModelsUniformInGeneral(uint32_t imageIndex)
+    {
+        for (int i = 0;i < MODEL_NUM;i++)
+        {
+            Models[i]->vertexUniBuffer->updateUniformBuffer(imageIndex, swapChain, camera);
+            Models[i]->fragmentUniBuffer->updateCameraPosition(imageIndex, swapChain, camera->Position);
+        }
+    }
+
+    void InitModelsDescriptorSets()
+    {
+        ModelsDescriptorSets.clear();
+        for (int i = 0;i < MODEL_NUM;i++)
+        {
+            Models[i]->InitDescriptorSets(swapChain, descriptorSetLayout);
+            ModelsDescriptorSets.push_back(Models[i]->descriptorSets->self);
+        }
+    }
+
+    void DestroyModelsDescriptorSetsPool()
+    {
+        for (int i = 0;i < MODEL_NUM;i++)
+        {
+            Models[i]->DestroyDescriptorSetsPool(logicDevice);
         }
     }
 
@@ -495,6 +511,16 @@ private:
         for (int i = 0;i < MODEL_NUM;i++)
         {
             Models_Vertex_Buffers[i]->DestroyAll();
+        }
+    }
+
+    //temp: need change
+    void UpdateModelsUniformTemp1()
+    {
+        for (int i = 0;i < swapChain->swapChainImages.size();i++)
+        {
+            for(int j=0;j<MODEL_NUM;j++)
+                Models[j]->fragmentUniBuffer->updateLightBuffer(i, swapChain, camera->Position);
         }
     }
 

@@ -9,8 +9,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <vector>
-#include "TextureImage.h"
-
+#include "DescriptorSets.h"
 using namespace std;
 
 class Model
@@ -40,6 +39,18 @@ public:
 	图像纹理对象
 	*/
 	TextureImage* textureImages[IMAGE_NUM];
+	/*
+	顶点着色器Uniform对象
+	*/
+	UniformBuffer* vertexUniBuffer;
+	/*
+	片元着色器Uniform对象
+	*/
+	UniformBuffer* fragmentUniBuffer;
+	/*
+	描述符集
+	*/
+	DescriptorSets* descriptorSets;
 
 
 	/*
@@ -62,21 +73,31 @@ public:
 
 	void LoadModel2(std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices);
 
-    // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
-    void processNode(aiNode* node, const aiScene* scene, std::vector<MyVertex>& vertices, std::vector<uint16_t>& indices);
+	void LoadModel1(std::vector<MyVertex>& vertices, std::vector<uint16_t>& indices);
 
-	void processNode(aiNode* node, const aiScene* scene, std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices);
-
-    void processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex>& vertices, std::vector<uint16_t>& indices);
-
-	void processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices);
-   
-	void LoadModel(std::vector<MyVertex>& vertices, std::vector<uint16_t>& indices);
-
-	void LoadModel(std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices);
+	void LoadModel1(std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices);
 
 	void InitTextures(std::array<std::string, IMAGE_NUM + 10> ImageAddressArray, CommandBuffer* commandBuffer);
 
 	void DestroyTextures();
+
+	void InitUniformBuffer(SwapChain* swapChain);
+
+	void DestroyUniformBuffer(SwapChain* swapChain);
+
+	void InitDescriptorSets(SwapChain* swapChain, DescriptorSetLayout* descriptorSetLayout);
+
+	void DestroyDescriptorSetsPool(LogicDevice* logicDevice);
+
+private:
+	// processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
+	void processNode(aiNode* node, const aiScene* scene, std::vector<MyVertex>& vertices, std::vector<uint16_t>& indices);
+
+	void processNode(aiNode* node, const aiScene* scene, std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices);
+
+	void processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex>& vertices, std::vector<uint16_t>& indices);
+
+	void processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices);
+
 };
 

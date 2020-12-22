@@ -129,22 +129,28 @@ struct FragmentOfUniformBufferObject {
 #define IMAGE_NUM  2
 #define UNIFORM_NUM 2
 #define MODEL_NUM 2
-const std::array<std::string, IMAGE_NUM + 10> ImageAddressArray =
+const std::vector<std::array<std::string, IMAGE_NUM + 10>> ImageAddressArray =
 {
-    "textures/KHTK/T1_C.jpg",
-    "textures/KHTK/T1_N.jpg",
-    "textures/Circuitry/Circuitry Emission.png"
+    {
+        "textures/KHTK/T1_C.jpg",
+        "textures/KHTK/T1_N.jpg",
+        "textures/Circuitry/Circuitry Emission.png"
+    },
+    {
+        "textures/BigStone/kmd_a_albedo.jpg",
+        "textures/BigStone/kmd_a_NormalsMap.jpg",
+    }
 };
 
 /********模型相关********/
 const std::array<std::string, MODEL_NUM> ModelAddress = {
      "models/KHTK/KHTK_mesh.obj",
-     "models/KHTK/KHTK_mesh.obj"
+     "models/BigStone/big-border-stone-02.obj"
 };
 
 const std::array<float, MODEL_NUM> ModelScaleFactor = {
     1000.0,
-    1.0
+    0.5
 };
 
 const std::array<glm::vec3, MODEL_NUM> ModelOriginPosition = {
@@ -178,6 +184,7 @@ const std::array<std::string, MODEL_NUM + 100> temp = {
     
     "models/KHTK/KHTK_mesh.obj",
 
+    "models/BigStone/big-border-stone-02.obj",
 
     "textures/Circuitry/Circuitry Albedo.png",
     "textures/Circuitry/Circuitry Normals.png",
@@ -192,7 +199,14 @@ const std::array<std::string, MODEL_NUM + 100> temp = {
     "textures/KHTK/T1_E.png",
     "textures/KHTK/T1_M.png",
     "textures/KHTK/T1_N.jpg",
-    "textures/KHTK/T1_R.jpg"
+    "textures/KHTK/T1_R.jpg",
+
+    "textures/BigStone/kmd_a_albedo.jpg",
+    "textures/BigStone/kmd_a_NormalsMap.jpg",
+    "textures/BigStone/kmd_a_[Specular].jpg",
+    "textures/BigStone/kmd_a_ao.jpg",
+    "textures/BigStone/kmd_a_alfa.jpg"
+    
 
 };
 

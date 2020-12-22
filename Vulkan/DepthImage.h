@@ -6,7 +6,7 @@ public:
 	 * comment: 设置深度缓存的资源
 	 * return: void
 	 */
-	void createDepthResources();
+	void createDepthResources(SwapChain* swapChain);
 
 	/*
 	 * comment: 寻找支持的格式

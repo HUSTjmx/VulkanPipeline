@@ -165,7 +165,7 @@ void CommandBuffer::excuteCommandBufferByIndex(std::vector<VkFramebuffer> swapCh
     }
 }
 
-void CommandBuffer::excuteCommandBufferForAll(std::vector<VkFramebuffer> swapChainFramebuffers, std::vector<VertexBuffer*> vertexBuffer, std::vector<VkDescriptorSet>& descriptorSets)
+void CommandBuffer::excuteCommandBufferForAll(std::vector<VkFramebuffer> swapChainFramebuffers, std::vector<VertexBuffer*> vertexBuffer, std::vector<std::vector<VkDescriptorSet>>& descriptorSets)
 {
     for (size_t i = 0; i < commandBuffers.size(); i++) {
         VkCommandBufferBeginInfo beginInfo{};
@@ -204,7 +204,7 @@ void CommandBuffer::excuteCommandBufferForAll(std::vector<VkFramebuffer> swapCha
                     vkCmdBindIndexBuffer(commandBuffers[i], vertexBuffer[j]->indexBuffer, 0, VK_INDEX_TYPE_UINT16);
                 else
                     vkCmdBindIndexBuffer(commandBuffers[i], vertexBuffer[j]->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
+                vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorSets[j][i], 0, nullptr);
 
                 if (vertexBuffer[j]->indexType == VK_INDEX_TYPE_UINT16)
                     vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(vertexBuffer[j]->indices.size()), 1, 0, 0, 0);
@@ -215,7 +215,7 @@ void CommandBuffer::excuteCommandBufferForAll(std::vector<VkFramebuffer> swapCha
             }
             else {
                 // todo: modify
-                vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
+                vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorSets[j][i], 0, nullptr);
 
                 vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(vertexBuffer[j]->vertices.size()), 1, 0, 0);
             }

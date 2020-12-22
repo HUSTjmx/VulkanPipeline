@@ -266,7 +266,7 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex
     // return a mesh object created from the extracted mesh data
 }
 
-void Model::LoadModel(std::vector<MyVertex>& vertices, std::vector<uint16_t>& indices)
+void Model::LoadModel1(std::vector<MyVertex>& vertices, std::vector<uint16_t>& indices)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -312,7 +312,7 @@ void Model::LoadModel(std::vector<MyVertex>& vertices, std::vector<uint16_t>& in
 
 }
 
-void Model::LoadModel(std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices)
+void Model::LoadModel1(std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -380,4 +380,31 @@ void Model::DestroyTextures()
     {
         textureImages[i]->DestroyAll();
     }
+}
+
+void Model::InitUniformBuffer(SwapChain* swapChain)
+{
+    vertexUniBuffer = new UniformBuffer(swapChain, sizeof(VertexOfUniformBufferObject));
+    vertexUniBuffer->createUniformBuffers(swapChain);
+
+    fragmentUniBuffer = new UniformBuffer(swapChain, sizeof(FragmentOfUniformBufferObject));
+    fragmentUniBuffer->createUniformBuffers(swapChain);
+}
+
+void Model::DestroyUniformBuffer(SwapChain* swapChain)
+{
+    vertexUniBuffer->Destroy(swapChain, swapChain->logicDevice->self);
+    fragmentUniBuffer->Destroy(swapChain, swapChain->logicDevice->self);
+}
+
+void Model::InitDescriptorSets(SwapChain* swapChain, DescriptorSetLayout* descriptorSetLayout)
+{
+    descriptorSets = new DescriptorSets();
+    descriptorSets->createDescriptorPool(swapChain);
+    descriptorSets->createSelf(swapChain, descriptorSetLayout, vertexUniBuffer, textureImages, fragmentUniBuffer);
+}
+
+void Model::DestroyDescriptorSetsPool(LogicDevice* logicDevice)
+{
+    descriptorSets->destroyDescriptorPool(logicDevice);
 }
