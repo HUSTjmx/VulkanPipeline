@@ -1,3 +1,36 @@
-﻿  DescriptorSets.cpp
+﻿  CommandBuffer.cpp
+  CreateTool.cpp
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\CreateTool.cpp(148,35): warning C4305: “初始化”: 从“double”到“float”截断
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\CreateTool.cpp(193,35): warning C4305: “初始化”: 从“double”到“float”截断
+  DepthImage.cpp
+  DescriptorSets.cpp
 C:\Users\Cooler\source\repos\Vulkan\Vulkan\UniformBuffer.h(6,9): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+  FrameBuffer.cpp
+  GraphicsPipeline.cpp
+  HelloTriangleApplication.cpp
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\UniformBuffer.h(6,9): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(30,17): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(31,17): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(35,19): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(36,19): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(38,13): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(39,13): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(48,32): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\HelloTriangleApplication.cpp(242,32): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+  LogicDevice.cpp
+  Model.cpp
+  GLM: GLM_GTX_hash extension included
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\Model.cpp(358,12): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\Model.cpp(358,12): message : 请考虑在格式字符串中使用“%zd”
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\Model.cpp(358,12): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 2 拥有了类型“unsigned __int64”
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\Model.cpp(358,12): message : 请考虑在格式字符串中使用“%zd”
+  MyBuffer.cpp
+  PhysicalDevice.cpp
+  SwapChain.cpp
+  TextureImage.cpp
+  UniformBuffer.cpp
+C:\Users\Cooler\source\repos\Vulkan\Vulkan\UniformBuffer.h(6,9): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+  VertexBuffer.cpp
+  正在生成代码...
+LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
   Vulkan.vcxproj -> C:\Users\Cooler\source\repos\Vulkan\x64\Debug\Vulkan.exe

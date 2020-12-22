@@ -32,14 +32,12 @@ public:
     void createSyncObjects();
 
     //创建命令缓冲区(为SwapChain中的每一个Image创建一个) & 重建
-    void Create(std::vector<VkFramebuffer> swapChainFramebuffers , std::vector<VkDescriptorSet>& descriptorSets);
+    void Create(std::vector<VkFramebuffer> swapChainFramebuffers);
 
     void excuteCommandBufferByVertex(std::vector<VkFramebuffer> swapChainFramebuffers, VertexBuffer* vertexBuffer
        , std::vector<VkDescriptorSet>& descriptorSets);
 
     void excuteCommandBufferByIndex(std::vector<VkFramebuffer> swapChainFramebuffers, VertexBuffer* vertexBuffer, std::vector<VkDescriptorSet>& descriptorSets);
-
-    void excuteCommandBufferForTest(std::vector<VkFramebuffer> swapChainFramebuffers, VertexBuffer* vertexBuffer1, VertexBuffer* vertexBuffer2, std::vector<VkDescriptorSet>& descriptorSets);
 
     //绘制所有对象
     void excuteCommandBufferForAll(std::vector<VkFramebuffer> swapChainFramebuffers, std::vector<VertexBuffer*> vertexBuffer, std::vector<VkDescriptorSet>& descriptorSets);

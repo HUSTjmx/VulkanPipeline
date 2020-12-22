@@ -13,6 +13,22 @@ namespace std {
 Model::Model(std::string address)
 {
 	this->address = address;
+    this->scaleSize = 1.0;
+    this->originPosition = glm::vec3(0.0, 0.0, 0.0);
+}
+
+Model::Model(std::string address, float size)
+{
+    this->address = address;
+    this->scaleSize = size;
+    this->originPosition = glm::vec3(0.0, 0.0, 0.0);
+}
+
+Model::Model(std::string address, float size, glm::vec3 position)
+{
+    this->address = address;
+    this->scaleSize = size;
+    this->originPosition = position;
 }
 
 // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
@@ -97,10 +113,10 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex
         MyVertex vertex;
         glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
         // positions
-        vector.x = mesh->mVertices[i].x;
-        vector.y = mesh->mVertices[i].y;
-        vector.z = mesh->mVertices[i].z;
-        vertex.pos = vector;
+        vector.x = mesh->mVertices[i].x / scaleSize;
+        vector.y = mesh->mVertices[i].y / scaleSize;
+        vector.z = mesh->mVertices[i].z / scaleSize;
+        vertex.pos = vector + originPosition;
         // normals
         if (mesh->HasNormals())
         {
@@ -168,19 +184,19 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex
     // return a mesh object created from the extracted mesh data
 }
 
-int a = 0, b = 0;
 void Model::processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex>& vertices, std::vector<uint32_t>& indices)
 {
+    printf("%f\n", this->scaleSize);
     // walk through each of the mesh's vertices
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
         MyVertex vertex;
         glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
         // positions
-        vector.x = mesh->mVertices[i].x;
-        vector.y = mesh->mVertices[i].y;
-        vector.z = mesh->mVertices[i].z;
-        vertex.pos = vector;
+        vector.x = mesh->mVertices[i].x / scaleSize;
+        vector.y = mesh->mVertices[i].y / scaleSize;
+        vector.z = mesh->mVertices[i].z / scaleSize;
+        vertex.pos = vector + originPosition;
         // normals
         if (mesh->HasNormals())
         {
@@ -213,7 +229,6 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex
             vertex.texCoord = glm::vec2(0.0f, 0.0f);
 
         vertices.push_back(vertex);
-        a++;
     }
     // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
     for (unsigned int i = 0; i < mesh->mNumFaces; i++)
@@ -223,7 +238,6 @@ void Model::processMesh(aiMesh* mesh, const aiScene* scene, std::vector<MyVertex
         for (unsigned int j = 0; j < face.mNumIndices; j++)
         {
             indices.push_back(face.mIndices[j]);
-            b++;
         }
     }
     //printf("aaaaa: %d  %d\n", a,b);
@@ -269,10 +283,11 @@ void Model::LoadModel(std::vector<MyVertex>& vertices, std::vector<uint16_t>& in
         for (const auto& index : shape.mesh.indices) {
             MyVertex vertex{};
             vertex.pos = {
-                attrib.vertices[3 * index.vertex_index + 0],
-                attrib.vertices[3 * index.vertex_index + 1],
-                attrib.vertices[3 * index.vertex_index + 2]
+                attrib.vertices[3 * index.vertex_index + 0] / scaleSize,
+                attrib.vertices[3 * index.vertex_index + 1] / scaleSize,
+                attrib.vertices[3 * index.vertex_index + 2] / scaleSize
             };
+            vertex.pos = vertex.pos + originPosition;
 
             vertex.normal = {
                  attrib.normals[3 * index.normal_index + 0],
@@ -314,10 +329,11 @@ void Model::LoadModel(std::vector<MyVertex>& vertices, std::vector<uint32_t>& in
         for (const auto& index : shape.mesh.indices) {
             MyVertex vertex{};
             vertex.pos = {
-                attrib.vertices[3 * index.vertex_index + 0],
-                attrib.vertices[3 * index.vertex_index + 1],
-                attrib.vertices[3 * index.vertex_index + 2]
+                attrib.vertices[3 * index.vertex_index + 0] / scaleSize,
+                attrib.vertices[3 * index.vertex_index + 1] / scaleSize,
+                attrib.vertices[3 * index.vertex_index + 2] / scaleSize
             };
+            vertex.pos = vertex.pos + originPosition;
 
             vertex.normal = {
                  attrib.normals[3 * index.normal_index + 0],
@@ -340,4 +356,28 @@ void Model::LoadModel(std::vector<MyVertex>& vertices, std::vector<uint32_t>& in
         }
     }
     printf("aaaaa: %d  %d\n", indices.size(), vertices.size());
+}
+
+void Model::InitTextures(std::array<std::string, IMAGE_NUM + 10> ImageAddressArray, CommandBuffer* commandBuffer)
+{
+    for (int i = 0;i < IMAGE_NUM;i++)
+    {
+        if (ImageAddressArray[i].empty())
+        {
+            throw std::runtime_error("loss of Image Address");
+            break;
+        }
+        textureImages[i] = new TextureImage(commandBuffer, ImageAddressArray[i]);
+        textureImages[i]->CreateSelf();
+        textureImages[i]->createTextureImageView(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+        textureImages[i]->createTextureSampler();
+    }
+}
+
+void Model::DestroyTextures()
+{
+    for (int i = 0;i < IMAGE_NUM;i++)
+    {
+        textureImages[i]->DestroyAll();
+    }
 }

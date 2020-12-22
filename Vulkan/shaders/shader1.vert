@@ -21,9 +21,8 @@ layout(location = 4) out vec3 fragBinormal;
 
 void main() {
    // gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
-    float a = 1000.0f;
-    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition/a, 1.0);
-    worldPos = vec3(ubo.model * vec4(inPosition/a, 1.0));
+    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
+    worldPos = vec3(ubo.model * vec4(inPosition, 1.0));
 
     fragNormal = normalize(mat3(transpose(inverse(ubo.model))) * inNormal);  
     fragTangent = normalize(mat3(transpose(inverse(ubo.model))) * inTangent);

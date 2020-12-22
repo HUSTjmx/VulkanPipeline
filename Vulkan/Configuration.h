@@ -112,13 +112,14 @@ struct MyVertex {
 };
 
 
-struct CameraOfUniformBufferObject {
+struct VertexOfUniformBufferObject {
     alignas(16) glm::mat4 model;
     alignas(16) glm::mat4 view;
     alignas(16) glm::mat4 proj;
+    alignas(16) glm::vec3 ObjectPosition;
 };
 
-struct PointLightOfUniformBufferObject {
+struct FragmentOfUniformBufferObject {
     alignas(16) glm::vec3 Position;
     alignas(16) glm::vec3 Color;
     alignas(16) glm::vec3 CamPos;
@@ -127,7 +128,7 @@ struct PointLightOfUniformBufferObject {
 
 #define IMAGE_NUM  2
 #define UNIFORM_NUM 2
-#define MODEL_NUM 1
+#define MODEL_NUM 2
 const std::array<std::string, IMAGE_NUM + 10> ImageAddressArray =
 {
     "textures/KHTK/T1_C.jpg",
@@ -138,7 +139,17 @@ const std::array<std::string, IMAGE_NUM + 10> ImageAddressArray =
 /********模型相关********/
 const std::array<std::string, MODEL_NUM> ModelAddress = {
      "models/KHTK/KHTK_mesh.obj",
+     "models/KHTK/KHTK_mesh.obj"
+};
 
+const std::array<float, MODEL_NUM> ModelScaleFactor = {
+    1000.0,
+    1.0
+};
+
+const std::array<glm::vec3, MODEL_NUM> ModelOriginPosition = {
+    glm::vec3(1.0,0.0,0.0),
+    glm::vec3(0.0,0.0,0.0)
 };
 
 //索引类型

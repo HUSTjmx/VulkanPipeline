@@ -29,12 +29,12 @@ void DescriptorSets::UpdateDescriptorSets(SwapChain* swapChain, UniformBuffer* u
 		VkDescriptorBufferInfo bufferInfo{};
 		bufferInfo.buffer = uniformBuffer->selfs[i];
 		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(CameraOfUniformBufferObject);
+		bufferInfo.range = sizeof(VertexOfUniformBufferObject);
 
 		VkDescriptorBufferInfo LightInfo{};
 		LightInfo.buffer = lightBuffer->selfs[i];
 		LightInfo.offset = 0;
-		LightInfo.range = sizeof(PointLightOfUniformBufferObject);
+		LightInfo.range = sizeof(FragmentOfUniformBufferObject);
 
 		VkDescriptorImageInfo imageInfos[IMAGE_NUM];
 		for (int j = 0;j < IMAGE_NUM;j++)

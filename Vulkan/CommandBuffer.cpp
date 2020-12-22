@@ -52,7 +52,7 @@ void CommandBuffer::createSyncObjects() {
 }
 
 //创建命令缓冲区(为SwapChain中的每一个Image创建一个) & 重建
-void CommandBuffer::Create(std::vector<VkFramebuffer> swapChainFramebuffers,std::vector<VkDescriptorSet>& descriptorSets) {
+void CommandBuffer::Create(std::vector<VkFramebuffer> swapChainFramebuffers) {
     commandBuffers.resize(swapChainFramebuffers.size());
 
     VkCommandBufferAllocateInfo allocInfo{};
@@ -165,61 +165,6 @@ void CommandBuffer::excuteCommandBufferByIndex(std::vector<VkFramebuffer> swapCh
     }
 }
 
-void CommandBuffer::excuteCommandBufferForTest(std::vector<VkFramebuffer> swapChainFramebuffers, VertexBuffer* vertexBuffer1, VertexBuffer* vertexBuffer2, std::vector<VkDescriptorSet>& descriptorSets)
-{
-    for (size_t i = 0; i < commandBuffers.size(); i++) {
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = 0; // Optional
-        beginInfo.pInheritanceInfo = nullptr; // Optional
-
-        if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
-            throw std::runtime_error("failed to begin recording command buffer!");
-        }
-
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = graphicsPipeline->renderPass;
-        renderPassInfo.framebuffer = swapChainFramebuffers[i];
-        renderPassInfo.renderArea.offset = { 0, 0 };
-        renderPassInfo.renderArea.extent = graphicsPipeline->swapChain->swapChainExtent;
-        std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
-        clearValues[1].depthStencil = { 1.0f, 0 };
-
-        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-        renderPassInfo.pClearValues = clearValues.data();
-
-        vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->self);
-
-        VkBuffer vertexBuffers[] = { vertexBuffer2->self };
-        VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(commandBuffers[i], vertexBuffer2->indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-        vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
-
-        vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(vertexBuffer2->indices.size()), 1, 0, 0, 0);
-
-
-
-        VkBuffer vertexBuffers2[] = { vertexBuffer1->self };
-        VkDeviceSize offsets2[] = { 0 };
-        vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers2, offsets2);
-        vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
-
-        vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(vertexBuffer1->vertices.size()), 1, 0, 0);
-
-
-        vkCmdEndRenderPass(commandBuffers[i]);
-
-        if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to record command buffer!");
-        }
-
-    }
-}
-
 void CommandBuffer::excuteCommandBufferForAll(std::vector<VkFramebuffer> swapChainFramebuffers, std::vector<VertexBuffer*> vertexBuffer, std::vector<VkDescriptorSet>& descriptorSets)
 {
     for (size_t i = 0; i < commandBuffers.size(); i++) {
@@ -255,12 +200,21 @@ void CommandBuffer::excuteCommandBufferForAll(std::vector<VkFramebuffer> swapCha
             vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
             if (vertexBuffer[j]->excuteType == Index)
             {
-                vkCmdBindIndexBuffer(commandBuffers[i], vertexBuffer[j]->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+                if (vertexBuffer[j]->indexType == VK_INDEX_TYPE_UINT16)
+                    vkCmdBindIndexBuffer(commandBuffers[i], vertexBuffer[j]->indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+                else
+                    vkCmdBindIndexBuffer(commandBuffers[i], vertexBuffer[j]->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
                 vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
 
-                vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(vertexBuffer[j]->indices.size()), 1, 0, 0, 0);
+                if (vertexBuffer[j]->indexType == VK_INDEX_TYPE_UINT16)
+                    vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(vertexBuffer[j]->indices.size()), 1, 0, 0, 0);
+                else
+                {
+                    vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(vertexBuffer[j]->indices_32.size()), 1, 0, 0, 0);
+                }
             }
             else {
+                // todo: modify
                 vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
 
                 vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(vertexBuffer[j]->vertices.size()), 1, 0, 0);

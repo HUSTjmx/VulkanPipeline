@@ -22,6 +22,14 @@ public:
 
     void updateLightBuffer(uint32_t currentImage, SwapChain* swapChain, glm::vec3 camPos);
 
+    void updateObjectPosition(uint32_t currentImage, SwapChain* swapChain, glm::vec3 objectPosition);
+
+    void updateCameraPosition(uint32_t currentImage, SwapChain* swapChain, glm::vec3 camPosition);
+
     void Destroy(SwapChain* swapChain, VkDevice device);
+
+private:
+    VertexOfUniformBufferObject vertexShaderUniform{};
+    FragmentOfUniformBufferObject fragmentShaderUNiform{};
 };
 #endif // !UNIFORMBUFFER

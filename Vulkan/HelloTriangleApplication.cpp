@@ -81,8 +81,6 @@ public:
     UniformBuffer* LightUniBuffer;
     //描述符集
     DescriptorSets* descriptorSets;
-    //图像纹理对象
-    TextureImage* textureImages[IMAGE_NUM];
     //深度缓存资源
     DepthImage* depthImage;
 
@@ -150,38 +148,33 @@ private:
 
         frameBuffer = new FrameBuffer(*swapChain, *graphicsPipeline,depthImage->self_view);
 
-        InitTextures();
-
         LoadModels();
 
         InitVertexBuffers();
 
-        verterBuffer = new VertexBuffer(swapChain,vertices1);
-        verterBuffer->createSelf(commandBuffer->commandPool);
-
-        std::vector<MyVertex> sphere_vertexs;
-        std::vector<uint32_t>sphere_indices;
-        CreateTool::GetSphereData(sphere_vertexs, sphere_indices);
-       // CreateTool::SetTangentAndBiForVertex(sphere_vertexs, sphere_indices);
-        vertexBufferForSphere = new VertexBuffer(swapChain, sphere_vertexs, sphere_indices);
-        vertexBufferForSphere->createSelf(commandBuffer->commandPool);
-        vertexBufferForSphere->createIndexBuffer(commandBuffer->commandPool);
-        Models_Vertex_Buffers.push_back(vertexBufferForSphere);
+       // std::vector<MyVertex> sphere_vertexs;
+       // std::vector<uint32_t>sphere_indices;
+       // CreateTool::GetSphereData(sphere_vertexs, sphere_indices);
+       //// CreateTool::SetTangentAndBiForVertex(sphere_vertexs, sphere_indices);
+       // vertexBufferForSphere = new VertexBuffer(swapChain, sphere_vertexs, sphere_indices);
+       // vertexBufferForSphere->createSelf(commandBuffer->commandPool);
+       // vertexBufferForSphere->createIndexBuffer(commandBuffer->commandPool);
+       // Models_Vertex_Buffers.push_back(vertexBufferForSphere);
 
         //printf_s("bbb: %d %d\n", Models_Vertex_Buffers[0]->indices_32.size(), Models_Vertex_Buffers[0]->vertices.size());
 
-        uniformBuffer = new UniformBuffer(swapChain, sizeof(CameraOfUniformBufferObject));
+        uniformBuffer = new UniformBuffer(swapChain, sizeof(VertexOfUniformBufferObject));
         uniformBuffer->createUniformBuffers(swapChain);
 
-        LightUniBuffer = new UniformBuffer(swapChain, sizeof(PointLightOfUniformBufferObject));
+        LightUniBuffer = new UniformBuffer(swapChain, sizeof(FragmentOfUniformBufferObject));
         LightUniBuffer->createUniformBuffers(swapChain);
 
         descriptorSets = new DescriptorSets();
         descriptorSets->createDescriptorPool(swapChain);
-        descriptorSets->createSelf(swapChain, descriptorSetLayout, uniformBuffer, textureImages,LightUniBuffer);
+        descriptorSets->createSelf(swapChain, descriptorSetLayout, uniformBuffer, textureImages ,LightUniBuffer);
         
-        commandBuffer->Create(frameBuffer->swapChainFramebuffers,descriptorSets->self);
-        commandBuffer->excuteCommandBufferByIndex(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers[0], descriptorSets->self);
+        commandBuffer->Create(frameBuffer->swapChainFramebuffers);
+        commandBuffer->excuteCommandBufferForAll(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers, descriptorSets->self);
         commandBuffer->createSyncObjects();
     }
 
@@ -285,10 +278,6 @@ private:
 
         descriptorSetLayout->DestroySelf(logicDevice->self);
 
-        verterBuffer->DestroyAll();
-
-        vertexBufferForSphere->DestroyAll();
-
         DestroyVertexBuffers();
 
         logicDevice->Destroy();
@@ -341,18 +330,19 @@ private:
 
         frameBuffer = new FrameBuffer(*swapChain, *graphicsPipeline, depthImage->self_view);
 
-        uniformBuffer = new UniformBuffer(swapChain, sizeof(CameraOfUniformBufferObject));
+        uniformBuffer = new UniformBuffer(swapChain, sizeof(VertexOfUniformBufferObject));
         uniformBuffer->createUniformBuffers(swapChain);
 
-        LightUniBuffer = new UniformBuffer(swapChain, sizeof(PointLightOfUniformBufferObject));
+        LightUniBuffer = new UniformBuffer(swapChain, sizeof(FragmentOfUniformBufferObject));
         LightUniBuffer->createUniformBuffers(swapChain);
 
         descriptorSets = new DescriptorSets();
         descriptorSets->createDescriptorPool(swapChain);
         descriptorSets->createSelf(swapChain, descriptorSetLayout, uniformBuffer,textureImages,LightUniBuffer);
 
-        commandBuffer->Create(frameBuffer->swapChainFramebuffers, descriptorSets->self);
-        commandBuffer->excuteCommandBufferForTest(frameBuffer->swapChainFramebuffers, verterBuffer, vertexBufferForSphere, descriptorSets->self);
+        commandBuffer->Create(frameBuffer->swapChainFramebuffers);
+        //commandBuffer->excuteCommandBufferForAll(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers, descriptorSets->self);
+        commandBuffer->excuteCommandBufferByIndex(frameBuffer->swapChainFramebuffers, Models_Vertex_Buffers[0], descriptorSets->self);
         commandBuffer->createSyncObjects();
 
         for (int i = 0;i < swapChain->swapChainImages.size();i++)
@@ -379,7 +369,7 @@ private:
         }
 
         uniformBuffer->updateUniformBuffer(imageIndex, swapChain, camera);
-        LightUniBuffer->updateLightBuffer(imageIndex, swapChain, camera->Position);
+        LightUniBuffer->updateCameraPosition(imageIndex, swapChain, camera->Position);
 
 
         // Check if a previous frame is using this image (i.e. there is its fence to wait on)
@@ -454,31 +444,12 @@ private:
             camera->ProcessKeyboard(RIGHT, deltaTime);
 
     }
-
-    /*
-    *comment：初始化纹理数组对象
-    */
-    void InitTextures()
-    {
-        for (int i = 0;i < IMAGE_NUM;i++)
-        {
-            if (ImageAddressArray[i].empty())
-            {
-                throw std::runtime_error("loss of Image Address");
-                break;
-            }
-            textureImages[i] = new TextureImage(commandBuffer,ImageAddressArray[i]);
-            textureImages[i]->CreateSelf();
-            textureImages[i]->createTextureImageView(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
-            textureImages[i]->createTextureSampler();
-        }
-    }
     
     void DestroyImages()
     {
         for (int i = 0;i < IMAGE_NUM;i++)
         {
-            textureImages[i]->DestroyAll();
+            Models[i]->DestroyTextures();
         }
     }
 
@@ -489,12 +460,15 @@ private:
     {
         for (int i = 0;i < MODEL_NUM;i++)
         {
-            Model* temp = new Model(ModelAddress[i]);
+            Model* temp = new Model(ModelAddress[i], ModelScaleFactor[i], ModelOriginPosition[i]);
             std::vector<MyVertex> temp1;
             Models_Vertex.push_back(temp1);
             std::vector<VectorIndexType> temp2;
             Models_indices.push_back(temp2);
             temp->LoadModel2(Models_Vertex[i], Models_indices[i]);
+
+            temp->InitTextures(ImageAddressArray, commandBuffer);
+            Models.push_back(temp);
         }
     }
 
@@ -509,6 +483,7 @@ private:
             temp->createSelf(commandBuffer->commandPool);
             temp->createIndexBuffer(commandBuffer->commandPool);
             Models_Vertex_Buffers.push_back(temp);
+
         }
     }
 
